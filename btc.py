@@ -274,6 +274,7 @@ class BlockHeader(object):
         self._bits = bits
         self._nonce = nonce
         self._difficulty = None
+        self.hash = None
 
     def parse_from_hex(self, raw_hex):
         assert (len(raw_hex) == 80)
@@ -284,8 +285,8 @@ class BlockHeader(object):
         self._bits = decode_uint32(raw_hex[72:76])
         self._nonce = decode_uint32(raw_hex[76:80])
         self._difficulty = self.calc_difficulty(self._bits)
+        self.hash = format_hash(double_sha256(raw_hex))
         print self.__repr__()
-
         return self
 
     @staticmethod
@@ -308,10 +309,11 @@ class BlockHeader(object):
                'timestamp: {timestamp}, ' \
                'nonce: {nonce}, ' \
                'bits: {bits}, ' \
-               'difficulty: {difficulty}' \
+               'difficulty: {difficulty},' \
+               'hash: {block_hash}' \
                '>'.format(previous_block=self._previous_block_hash, version=self._version,
                           merkle_root=self._merkle_root, timestamp=self._timestamp, nonce=self._nonce, bits=self._bits,
-                          difficulty=self._difficulty)
+                          difficulty=self._difficulty, block_hash=self.hash)
 
 
 class Block(object):
